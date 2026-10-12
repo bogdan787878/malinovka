@@ -1,0 +1,13 @@
+/* Интерактивный генплан (см. js/map.js) */
+
+#genplan path {
+  fill: transparent;
+  transition: fill 0.2s ease;
+}
+
+/* подсветка только у свободных участков */
+#genplan path:not(.reserved):hover {
+  fill: #1E88E5;
+  opacity: 0.2;
+  cursor: pointer;
+}
