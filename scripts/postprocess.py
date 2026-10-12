@@ -64,6 +64,13 @@ assert 'css/map.css' in h
 h = h.replace('</body>', '<script src="js/plots-data.js" defer></script>\n<script src="js/map.js" defer></script>\n'
                           '<script src="js/lead-form.js" defer></script>\n<script src="js/analytics.js" defer></script>\n</body>', 1)
 
+# 2b. язык системных сообщений форм Tilda (окно «Спасибо», ошибки валидации):
+#     без атрибута берётся язык браузера посетителя и у части людей это английский
+if 'data-tilda-project-lang' not in h:
+    h = h.replace('<div id="allrecords" class="t-records"',
+                  '<div id="allrecords" class="t-records" data-tilda-project-lang="RU"', 1)
+    assert 'data-tilda-project-lang' in h, 'allrecords not found'
+
 # 3. custom properties with url(): resolved relative to the CSS file that uses them
 h = re.sub(r"(--[a-z-]+:url\(')img/", r"\1../img/", h)
 open('index.html', 'w', encoding='utf-8').write(h)
