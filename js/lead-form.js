@@ -3,12 +3,18 @@
  *
  * Валидацию, маску телефона и окно «Спасибо» по-прежнему делает штатный
  * js/tilda-forms-1.0.min.js — здесь подменена только сама отправка
- * (window.tildaForm.send). Формат запроса: help-ru.roistat.com/integrations/Webhook/
+ * (window.tildaForm.send).
+ *
+ * Формат запроса повторяет Tilda-вебхук (help.tilda.cc/forms/webhook), на котором
+ * этот же адрес Roistat уже работал: POST application/x-www-form-urlencoded с полями
+ * формы по их именам (name, phone) + formid + roistat_url/roistat_fields_roistat
+ * (их раньше добавлял скрипт Roistat для Tilda) + COOKIES.
+ * Дополнительно передаются поля из документации Roistat: title, comment, roistat_visit.
  *
  * ВАЖНО:
- *  - cloud.roistat.com не отдаёт CORS-заголовки, поэтому запрос уходит как
- *    "простой" (text/plain, mode: no-cors): тело — JSON, ответ браузеру не виден.
- *    Если заявки в Roistat не появляются — выбросить прямую отправку и слать через
+ *  - cloud.roistat.com не отдаёт CORS-заголовки, поэтому запрос уходит как «простой»
+ *    (form-urlencoded, mode: no-cors): сервер его получает, но ответ браузеру не виден.
+ *    Если заявки не появляются в Roistat (Настройки → История вебхуков) — слать через
  *    прокси (Cloudflare Worker), поменяв только ENDPOINT.
  *  - key виден в исходниках сайта: любой может прислать фейковую заявку.
  *    От простых ботов защищает honeypot-поле; перевыпустить ключ можно в Roistat.
@@ -89,22 +95,23 @@
       return false;
     }
 
-    var visit = roistatVisit();
-    var payload = {
-      title: value(form, 'tildaspec-formname') || DEFAULT_TITLE,
-      name: value(form, 'name'),
-      phone: normalizePhone(value(form, 'phone')),
-      comment: 'Страница: ' + location.href,
-      fields: { site: location.hostname, page: location.href }
-    };
-    if (visit) payload.roistat_visit = visit;
+    var visit = roistatVisit() || '';
+    var params = new URLSearchParams();
+    params.append('name', value(form, 'name'));
+    params.append('phone', normalizePhone(value(form, 'phone')));
+    params.append('title', value(form, 'tildaspec-formname') || DEFAULT_TITLE);
+    params.append('comment', 'Страница: ' + location.href);
+    params.append('formid', form.getAttribute('id') || '');
+    params.append('roistat_visit', visit);
+    params.append('roistat_fields_roistat', visit);
+    params.append('roistat_url', location.href);
+    params.append('COOKIES', document.cookie);
 
     window.fetch(ENDPOINT, {
       method: 'POST',
       mode: 'no-cors',
       keepalive: true,
-      headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
-      body: JSON.stringify(payload)
+      body: params // Content-Type: application/x-www-form-urlencoded;charset=UTF-8
     }).then(
       function () { onSuccess(form, btn); },
       function () { onError(form, btn); }

@@ -39,10 +39,13 @@ _raw/index.html         исходный HTML с Tilda как эталон дл�
 - **Форма заявок (имя + телефон, попап `#popup:myform`) шлёт заявки в Roistat webhook** — `js/lead-form.js`
   подменяет `tildaForm.send`; валидацию, маску и окно «Спасибо» по-прежнему делает Tilda-скрипт форм.
   Серверы Tilda (`forms.tildacdn.com`) больше не используются.
-  - Формат: JSON `{title, name, phone, comment, roistat_visit, fields}` (help-ru.roistat.com/integrations/Webhook/).
-  - cloud.roistat.com не отдаёт CORS → запрос `text/plain` + `no-cors`, ответа браузер не видит. Если заявки
-    не появятся в Roistat (Диагностика проекта → Список отправленных заявок), перейти на прокси (Cloudflare Worker)
-    и поменять только `ENDPOINT` в `lead-form.js`.
+  - Формат повторяет Tilda-вебхук, на котором этот же адрес Roistat работал раньше: POST
+    `application/x-www-form-urlencoded` с полями `name`, `phone`, `formid`, `roistat_url`,
+    `roistat_fields_roistat`, `COOKIES` + из документации Roistat `title`, `comment`, `roistat_visit`.
+    (Первая версия слала JSON как text/plain — заявки в Roistat не появлялись.)
+  - cloud.roistat.com не отдаёт CORS → `no-cors`, ответа браузер не видит, а сам вебхук на любой запрос
+    отвечает «success» (это только приём). Проверять доставку нужно в Roistat: Настройки → История вебхуков;
+    если там пусто — прокси (Cloudflare Worker), поменять только `ENDPOINT` в `lead-form.js`.
   - `key` вебхука лежит в клиентском коде (виден всем) → возможны фейковые заявки; от простых ботов есть honeypot-поле `website`.
   - Тестовая отправка = реальный лид в Roistat/CRM заказчика. При проверке подменять `window.fetch`, не слать по-настоящему.
   - `roistat_visit` берётся из cookie, которую ставит счётчик из `js/analytics.js` — только на боевом домене.
