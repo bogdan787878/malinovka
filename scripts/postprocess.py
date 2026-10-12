@@ -62,7 +62,7 @@ h = re.sub(r'(<link rel="stylesheet" href="css/fonts-tildasans\.css"[^>]*/>)',
            r'\1\n<link rel="stylesheet" href="css/map.css" type="text/css" media="all" />', h, count=1)
 assert 'css/map.css' in h
 h = h.replace('</body>', '<script src="js/plots-data.js" defer></script>\n<script src="js/map.js" defer></script>\n'
-                          '<script src="js/analytics.js" defer></script>\n</body>', 1)
+                          '<script src="js/lead-form.js" defer></script>\n<script src="js/analytics.js" defer></script>\n</body>', 1)
 
 # 3. custom properties with url(): resolved relative to the CSS file that uses them
 h = re.sub(r"(--[a-z-]+:url\(')img/", r"\1../img/", h)
@@ -89,7 +89,7 @@ for url, dst in (('https://static.tildacdn.com/lib/flags/flags7.png', 'img/flags
     if not os.path.exists(dst):
         subprocess.run(['curl', '-sL', '--compressed', '-o', dst, url], check=True)
 for f in ('js/tilda-forms-1.0.min.js', 'js/tilda-zero-forms-1.0.min.js', 'js/tilda-phone-mask-1.1.min.js',
-          'js/analytics.js', 'js/map.js', 'js/plots-data.js'):
+          'js/analytics.js', 'js/map.js', 'js/plots-data.js', 'js/lead-form.js'):
     subprocess.run(['node', '--check', f], check=True)
 left = sorted(set(re.findall(r'https?://[a-z0-9.\-]*tildacdn[^\s"\'<>)]*', h)))
 print('remaining tildacdn refs in index.html:', left)
