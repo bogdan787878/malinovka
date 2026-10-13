@@ -51,7 +51,12 @@
   }
 
   svg.querySelectorAll('path').forEach(function (path) {
-    if (!isFree(plotOf(path))) path.classList.add('reserved');
+    // проданный/забронированный участок: не кликается, без подсветки и курсора-«руки»
+    // (css/map.css: .reserved { pointer-events: none }), клик уходит на подложку и закрывает тултип
+    if (!isFree(plotOf(path))) {
+      path.classList.add('reserved');
+      return;
+    }
     path.style.cursor = 'pointer';
     path.addEventListener('click', showTooltip);
   });

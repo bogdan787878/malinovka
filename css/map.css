@@ -11,3 +11,8 @@
   opacity: 0.2;
   cursor: pointer;
 }
+
+/* проданные/забронированные участки не реагируют на мышь и касание */
+#genplan path.reserved {
+  pointer-events: none;
+}
