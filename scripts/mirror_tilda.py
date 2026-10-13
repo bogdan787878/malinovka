@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# !!! С 2026-10-13 репозиторий — источник правды. Запуск перезапишет index.html и откатит правки клиента. Не запускать.
 """Step 1 of the Tilda sync: fetch the live page into _raw/index.html, download every
 tildacdn asset (css/js/img/fonts) and write a localised index.html. Then run postprocess.py."""
 import os, re, sys, gzip, zlib, urllib.request, urllib.parse, concurrent.futures as cf

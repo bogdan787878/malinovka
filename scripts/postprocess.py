@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# !!! С 2026-10-13 репозиторий — источник правды. Запуск перезапишет index.html и откатит правки клиента. Не запускать.
 """Post-process the localised Tilda index.html (run after mirror_tilda.py).
 
 Strips Tilda-only runtime, moves analytics to js/analytics.js, replaces the inline
